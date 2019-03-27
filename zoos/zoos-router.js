@@ -39,20 +39,36 @@ router.get("/:id", (req, res) => {
 //POST /api/zoos
 
 router.post("/", (req, res) => {
+  console.log(req.body);
   db("zoos")
     .insert(req.body)
     .then(zoos => {
       const zoo = zoos[0];
       db("zoos")
-        .where({ id: req.params.id })
         // .first()
-        .then(zoo => {
-          res.status(201).json(zoo);
+        .then(ids => {
+          res.status(201).json(ids);
         });
     })
     .catch(error => {
       res.status(500).json(error);
     });
+});
+
+//UPDATE
+router.put("/:id", (req, res) => {
+  console.log(req.params);
+  db("zoos")
+    .where({ id: req.params.id })
+    .update(req.body, req.params.id)
+    .then(count => {
+      if (count > 0) {
+        res.status(200).json({ cunt });
+      } else {
+        res.status(404).json({ errorMessage: "Zoo not found" });
+      }
+    })
+    .catch(err => res.status(500).json(error));
 });
 
 //DELETE
@@ -64,9 +80,10 @@ router.delete("/:id", (req, res) => {
       if (count > 0) {
         res.status(204).end();
       } else {
-        res.status(204).json({ errorMessage: "Zoo not found" });
+        res.status(404).json({ errorMessage: "Zoo not found" });
       }
-    });
+    })
+    .catch(err => res.status(500).json(err));
 });
 
 module.exports = router;
