@@ -7,7 +7,8 @@ const knexConfig = {
   useNullAsDefault: true,
   connection: {
     filename: "./data/lambda.sqlite3"
-  }
+  },
+  debug: true
 };
 
 const db = knex(knexConfig);
@@ -17,8 +18,8 @@ const db = knex(knexConfig);
 router.get("/", (req, res) => {
   console.log(req.body);
   db("zoos")
-    .then(roles => {
-      res.status(200).json(roles);
+    .then(zoos => {
+      res.status(200).json(zoos);
     })
     .catch(error => {
       res.status(500).json(error);
@@ -42,10 +43,12 @@ router.post("/", (req, res) => {
   console.log(req.body);
   db("zoos")
     .insert(req.body)
-    .then(zoos => {
-      const zoo = zoos[0];
+    .then(ids => {
+      const id = ids[0];
       db("zoos")
         // .first()
+        .where({ id })
+        .first()
         .then(ids => {
           res.status(201).json(ids);
         });
