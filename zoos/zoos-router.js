@@ -44,7 +44,7 @@ router.post("/", (req, res) => {
     .then(zoos => {
       const zoo = zoos[0];
       db("zoos")
-        .where({ id })
+        .where({ id: req.params.id })
         // .first()
         .then(zoo => {
           res.status(201).json(zoo);
@@ -52,6 +52,20 @@ router.post("/", (req, res) => {
     })
     .catch(error => {
       res.status(500).json(error);
+    });
+});
+
+//DELETE
+router.delete("/:id", (req, res) => {
+  db("zoos")
+    .where({ id: req.params.id })
+    .del()
+    .then(count => {
+      if (count > 0) {
+        res.status(204).end();
+      } else {
+        res.status(204).json({ errorMessage: "Zoo not found" });
+      }
     });
 });
 
